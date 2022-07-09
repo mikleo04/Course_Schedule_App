@@ -28,9 +28,10 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         supportActionBar?.title = resources.getString(R.string.today_schedule)
-
-        val factory = HomeViewModelFactory.createTheFactory(this)
-        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+        
+        viewModel = ViewModelProvider(this,
+            HomeViewModelFactory.createTheFactory(this)
+        ).get(HomeViewModel::class.java)
         viewModel.setQueryType(queryType)
         viewModel.course.observe(this){
             showTodaySchedule(it)

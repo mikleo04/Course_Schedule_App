@@ -19,15 +19,10 @@ class CourseViewHolder(view: View): RecyclerView.ViewHolder(view) {
         course.apply {
             val day = getByNumber(day)
             val timeFormat = String.format(timeString, day, startTime, endTime)
-            val tvTime: TextView = itemView.findViewById(R.id.tv_time)
-            val tvCourse: TextView = itemView.findViewById(R.id.tv_course)
-            val tvLecturer: TextView = itemView.findViewById(R.id.tv_lecturer)
-
-            tvTime.text = timeFormat
-            tvCourse.text = courseName
-            tvLecturer.text = lecturer
-
-
+            
+            (itemView.findViewById(R.id.tv_time) as TextView).text = timeFormat
+            (itemView.findViewById(R.id.tv_course) as TextView).text = courseName
+            (itemView.findViewById(R.id.tv_lecturer) as TextView).text = lecturer
         }
 
         itemView.setOnClickListener {

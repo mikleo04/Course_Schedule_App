@@ -53,9 +53,9 @@ class ListActivity : AppCompatActivity() {
 
     private fun onCourseClick(course: Course) {
         //TODO 8 : Intent and show detailed course
-        val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra(DetailActivity.COURSE_ID, course.id)
-        startActivity(intent)
+        val i = Intent(this, DetailActivity::class.java)
+        i.putExtra(DetailActivity.COURSE_ID, course.id)
+        startActivity(i)
     }
 
     private fun initAction() {
@@ -75,10 +75,8 @@ class ListActivity : AppCompatActivity() {
 
     private fun setFabClick() {
         //TODO 9 : Create AddCourseActivity to set new course schedule
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener {
-            val intent = Intent(this, AddCourseActivity::class.java)
-            startActivity(intent)
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+            startActivity(Intent(this, AddCourseActivity::class.java))
         }
     }
 
@@ -109,13 +107,12 @@ class ListActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_sort -> {
-                showSortMenu()
-                true
-            }
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
+                true
+            }
+            R.id.action_sort -> { showSortMenu()
                 true
             }
             else -> super.onOptionsItemSelected(item)
