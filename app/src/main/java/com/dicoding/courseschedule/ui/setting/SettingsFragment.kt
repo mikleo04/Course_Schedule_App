@@ -14,8 +14,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         //TODO 10 : Update theme based on value in ListPreference
-        val listPreference = findPreference<ListPreference>(getString(R.string.pref_key_dark))
-        listPreference?.setOnPreferenceChangeListener { preference, newValueAccept ->
+        findPreference<ListPreference>(getString(R.string.pref_key_dark))?.setOnPreferenceChangeListener { preference, newValueAccept ->
             if(newValueAccept.equals("on")){
                 updateTheme(AppCompatDelegate.MODE_NIGHT_YES)
             }else if(newValueAccept.equals("off")){
@@ -27,14 +26,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         //TODO 11 : Schedule and cancel notification in DailyReminder based on SwitchPreference
-        val preferenceNotification = findPreference<SwitchPreference>(getString(R.string.pref_key_notify))
-        val dailyReminder = DailyReminder()
-
-        preferenceNotification?.setOnPreferenceChangeListener { preference, newValueAccept ->
+        findPreference<SwitchPreference>(getString(R.string.pref_key_notify))?.setOnPreferenceChangeListener { preference, newValueAccept ->
             if (newValueAccept.equals(true)){
-                dailyReminder.dailyReminder(requireContext())
+                DailyReminder().dailyReminder(requireContext())
             }else{
-                dailyReminder.cancelAlarm(requireContext())
+                DailyReminder().cancelAlarm(requireContext())
             }
             true
         }

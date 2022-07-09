@@ -16,11 +16,11 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4ClassRunner::class)
 class HomeActivityTest {
     @Before
-    fun default(){
+    fun before(){
         ActivityScenario.launch(HomeActivity::class.java)
     }
     @Test
-    fun addCourseActivityLaunchWhenAddCourseClicked() {
+    fun testAddCourseActivityWhenAddBtnClicked() {
         Intents.init()
         Espresso.onView(ViewMatchers.withId(R.id.action_add)).perform(ViewActions.click())
         Intents.intended(IntentMatchers.hasComponent(AddCourseActivity::class.java.name))

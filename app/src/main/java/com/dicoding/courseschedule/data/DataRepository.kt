@@ -19,13 +19,16 @@ class DataRepository(private val dao: CourseDao) {
     }
 
     fun getAllCourse(sortType: SortType): LiveData<PagedList<Course>> {
-        val result = dao.getAll(QueryUtil.sortedQuery(sortType))
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(true)
-            .setInitialLoadSizeHint(30)
-            .setPageSize(PAGE_SIZE)
-            .build()
-        return LivePagedListBuilder(result, config).build()
+        return LivePagedListBuilder(
+            dao.getAll(
+                QueryUtil.sortedQuery(sortType)
+            ),
+            PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setInitialLoadSizeHint(30)
+                .setPageSize(PAGE_SIZE)
+                .build()
+        ).build()
     }
 
     fun getCourse(id: Int) : LiveData<Course> {
@@ -33,9 +36,10 @@ class DataRepository(private val dao: CourseDao) {
     }
 
     fun getTodaySchedule() : List<Course> {
-        val calendar = Calendar.getInstance()
-        val day: Int = calendar.get(Calendar.DAY_OF_WEEK)
-        return dao.getTodaySchedule(day)
+        return dao.getTodaySchedule(
+            Calendar.getInstance()
+                .get(Calendar.DAY_OF_WEEK)
+        )
     }
 
     fun insert(course: Course) = executeThread {
@@ -54,8 +58,7 @@ class DataRepository(private val dao: CourseDao) {
         fun getInstance(context: Context): DataRepository? {
             return instance ?: synchronized(DataRepository::class.java) {
                 if (instance == null) {
-                    val database = CourseDatabase.getInstance(context)
-                    instance = DataRepository(database.courseDao())
+                    instance = DataRepository(CourseDatabase.getInstance(context).courseDao())
                 }
                 return instance
             }

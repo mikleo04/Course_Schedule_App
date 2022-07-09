@@ -35,17 +35,19 @@ class DailyReminder : BroadcastReceiver() {
 
     //TODO 12 : Implement daily reminder for every 06.00 a.m using AlarmManager
     fun dailyReminder(context: Context) {
-        val intent = Intent(context, DailyReminder::class.java)
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, 6)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
+        val c = Calendar.getInstance()
+        c.set(Calendar.HOUR_OF_DAY, 6)
 
-        val pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            ID_REPEATING,
+            Intent(context, DailyReminder::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
         val receiver = ComponentName(context, DailyReminder::class.java)
 
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
+        (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager)
+            .setInexactRepeating(AlarmManager.RTC_WAKEUP, c.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
         context.packageManager.setComponentEnabledSetting(
             receiver,
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
@@ -54,16 +56,18 @@ class DailyReminder : BroadcastReceiver() {
     }
 
     fun cancelAlarm(context: Context) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            ID_REPEATING,
+            Intent(context, DailyReminder::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
         context.packageManager.setComponentEnabledSetting(
             ComponentName(context, DailyReminder::class.java),
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
             PackageManager.DONT_KILL_APP
         )
-
-        val intent = Intent(context, DailyReminder::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, PendingIntent.FLAG_IMMUTABLE)
-        alarmManager.cancel(pendingIntent)
+        (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(pendingIntent)
     }
 
     private fun getPendingIntent(context: Context): PendingIntent? {
@@ -71,7 +75,7 @@ class DailyReminder : BroadcastReceiver() {
         }
         return TaskStackBuilder.create(context).run {
             addNextIntentWithParentStack(intent)
-            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
     }
 
@@ -83,26 +87,25 @@ class DailyReminder : BroadcastReceiver() {
             val courseData = String.format(timeString, it.startTime, it.endTime, it.courseName)
             notificationStyle.addLine(courseData)
         }
-
-        val channelName = "channel_name_tt"
-        val channelId = "channel_id_tt"
+        
         try {
-            var mBuilder = NotificationCompat.Builder(context, channelId)
+            var mBuilder = NotificationCompat.Builder(context, "cn_id")
                 .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle(context.getString(R.string.today_schedule))
                 .setStyle(notificationStyle)
                 .setContentIntent(getPendingIntent(context))
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-                channel.description = channelName
-                mBuilder.setChannelId(channelId)
-                notificationManager.createNotificationChannel(channel)
+                val channel = NotificationChannel("cn_id", "cn_name", NotificationManager.IMPORTANCE_DEFAULT)
+                mBuilder.setChannelId("cn_id")
+                channel.description = "cn_name"
+                (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                    .createNotificationChannel(channel)
             }
-            notificationManager.notify(123, mBuilder.build())
+            (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                .notify(123, mBuilder.build())
         }catch (e: Exception){
-            Log.i("TAG", "showNotification: exception")
+            Log.d("notif", "error")
         }
     }
 
